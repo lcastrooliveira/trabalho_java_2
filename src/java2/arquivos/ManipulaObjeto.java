@@ -1,30 +1,35 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
 package java2.arquivos;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.EOFException;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 /**
- * @author fabricio@utfpr.edu.br
+ *
+ * @author lucas.castro
  */
-public class ManipulaTexto implements ManipulaDados {
+public class ManipulaObjeto implements ManipulaDados {
     
     private File arquivo;
-    private BufferedReader entrada;
-    private BufferedWriter saida;
+    private FileOutputStream fos;
+    private ObjectOutputStream oos;
+    
+    private FileInputStream fis;
+    private ObjectInputStream ois;
 
-    public void ManipulaTexto() {
-        arquivo = null;
-        entrada = null;
-        saida = null;
-    }
-
+    @Override
     public void criarArquivo() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
@@ -41,25 +46,29 @@ public class ManipulaTexto implements ManipulaDados {
         } else {
             try {
                 if (arquivo.exists()) {
-                    saida = new BufferedWriter(new FileWriter(arquivo, true));//true(append).
+                    fos = new FileOutputStream(arquivo, true);
                     System.out.println("existe");
                 } else {
-                    saida = new BufferedWriter(new FileWriter(arquivo, false));//false(rewrite).
+                    fos = new FileOutputStream(arquivo, false);
                     System.out.println("NAO existe");
                 }
+                oos = new ObjectOutputStream(fos);
             } catch (IOException ioException) {
                 JOptionPane.showMessageDialog(null, "Erro ao Abrir Arquivo", "Erro", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
 
+    @Override
     public void fecharArquivo() {
         try {
-            if (saida != null) {
-                saida.close();
+            if (oos != null) {
+                oos.close();
+                fos.close();
             }
-            if (entrada != null) {
-                entrada.close();
+            if (ois != null) {
+                ois.close();
+                fis.close();
             }
         } catch (IOException ioException) {
             JOptionPane.showMessageDialog(null, "Error ao Fechar Arquivo", "Erro", JOptionPane.ERROR_MESSAGE);
@@ -67,23 +76,20 @@ public class ManipulaTexto implements ManipulaDados {
         }
     }
 
+    @Override
     public void GravaCliente(Cliente cliente) {
-        if (saida == null){
+        if (fos == null){
             criarArquivo();
         }
         try {
-            saida.write(cliente.getNome() + "\n");
-            saida.write(cliente.getIdade() + "\n");
-            saida.write(cliente.getFone() + "\n");
-            saida.write("xxx\n");
-            saida.flush();
-        } catch (NumberFormatException formatException) {
-            JOptionPane.showMessageDialog(null, "Erro", "Formato de Número Inválido.", JOptionPane.ERROR_MESSAGE);
+            oos.writeObject(cliente);
+            oos.flush();
         } catch (IOException ioException) {
             fecharArquivo();
         }
     }
 
+    @Override
     public void abrirArquivo() {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -98,35 +104,29 @@ public class ManipulaTexto implements ManipulaDados {
             JOptionPane.showMessageDialog(null, "Nome de Arquivo Inválido", "Nome de Arquivo Inválido", JOptionPane.ERROR_MESSAGE);
         } else {
             try {
-                entrada = new BufferedReader(new FileReader(arquivo));
+                fis = new FileInputStream(arquivo);
+                ois = new ObjectInputStream(fis);
             } catch (IOException ioException) {
                 JOptionPane.showMessageDialog(null, "Error ao Abrir Arquivo", "Erro", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
 
+    @Override
     public Cliente lerRegistro() {
-        Cliente cliente = null;
-        if (entrada == null){
+        Cliente cliente = new Cliente();
+        if (ois == null){
             abrirArquivo();
         }
         try {
-            cliente = new Cliente();
-            cliente.setNome(entrada.readLine());
-            cliente.setIdade(Integer.parseInt(entrada.readLine()));
-            cliente.setFone(entrada.readLine());
-            String fim = entrada.readLine();
-            if (!fim.equals("xxx")) {
-                JOptionPane.showMessageDialog(null, "Erro na leitura do Registro.", "Erro de Leitura", JOptionPane.ERROR_MESSAGE);
-            }
-        } catch (EOFException endOfFileException) {
-            JOptionPane.showMessageDialog(null, "Nao existem mais registros no arquivo.", "Fim do Arquivo", JOptionPane.ERROR_MESSAGE);
-        } catch (IOException ioException) {
+            cliente = (Cliente) ois.readObject();
+            return cliente;
+        } catch (IOException ex) {
             JOptionPane.showMessageDialog(null, "Erro durante a leitura do arquivo", "Erro de Leitura", JOptionPane.ERROR_MESSAGE);
-        } catch (NumberFormatException err) {
-            JOptionPane.showMessageDialog(null, "Erro na conversao do tipo ou final do arquivo.", "Erro de Leitura", JOptionPane.ERROR_MESSAGE);
-        }finally{
-            return cliente;     
+        } catch (ClassNotFoundException ex) {
+            JOptionPane.showMessageDialog(null, "Erro durante a leitura do arquivo", "Classe Cliente não encontrada", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            return cliente;
         }
     }
 }

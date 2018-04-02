@@ -4,10 +4,14 @@
  */
 package java2.arquivos;
 
+import java.io.Serializable;
+
 /**
  * @author fabricio
  */
-public class Cliente {
+public class Cliente implements Serializable {
+    
+    private static final long serialVersionUID = 16546416547L;
 
     private String nome;
     private String fone;

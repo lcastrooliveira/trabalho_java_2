@@ -15,11 +15,11 @@ package java2.arquivos;
 public class JanelaCliente extends javax.swing.JFrame {
 
     private Cliente cliente = null;
-    private ManipulaTexto mt = null;
+    private ManipulaDados mt = null;
 
     /** Creates new form JanelaCliente */
     public JanelaCliente() {
-        mt = new ManipulaTexto();
+        mt = new ManipulaObjeto();
         initComponents();
     }
 
