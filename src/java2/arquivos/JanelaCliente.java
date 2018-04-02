@@ -42,6 +42,7 @@ public class JanelaCliente extends javax.swing.JFrame {
         jSIdade = new javax.swing.JSpinner();
         jBtnGravar = new javax.swing.JButton();
         jBtnProximo = new javax.swing.JButton();
+        jBtnAnterior = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -79,6 +80,13 @@ public class JanelaCliente extends javax.swing.JFrame {
             }
         });
 
+        jBtnAnterior.setText("Anterior");
+        jBtnAnterior.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jBtnAnteriorActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -103,8 +111,10 @@ public class JanelaCliente extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jBtnProximo)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jBtnAnterior)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jBtnFechar)))
-                .addContainerGap(109, Short.MAX_VALUE))
+                .addContainerGap(160, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -126,11 +136,12 @@ public class JanelaCliente extends javax.swing.JFrame {
                     .addComponent(jBtnNovo)
                     .addComponent(jBtnGravar)
                     .addComponent(jBtnProximo)
-                    .addComponent(jBtnFechar))
-                .addContainerGap(39, Short.MAX_VALUE))
+                    .addComponent(jBtnFechar)
+                    .addComponent(jBtnAnterior))
+                .addContainerGap(15, Short.MAX_VALUE))
         );
 
-        setSize(new java.awt.Dimension(399, 245));
+        setSize(new java.awt.Dimension(485, 245));
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
@@ -155,6 +166,11 @@ public class JanelaCliente extends javax.swing.JFrame {
         cliente = mt.lerRegistro();
         atualizarTela();
     }//GEN-LAST:event_jBtnProximoActionPerformed
+
+    private void jBtnAnteriorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnAnteriorActionPerformed
+        cliente = mt.lerRegistroAnterior();
+        atualizarTela();
+    }//GEN-LAST:event_jBtnAnteriorActionPerformed
 
     public void limparTela() {
         jTFNome.setText("");
@@ -182,6 +198,7 @@ public class JanelaCliente extends javax.swing.JFrame {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jBtnAnterior;
     private javax.swing.JButton jBtnFechar;
     private javax.swing.JButton jBtnGravar;
     private javax.swing.JButton jBtnNovo;

@@ -129,4 +129,9 @@ public class ManipulaTexto implements ManipulaDados {
             return cliente;     
         }
     }
+
+    @Override
+    public Cliente lerRegistroAnterior() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

@@ -15,4 +15,5 @@ public interface ManipulaDados {
     void GravaCliente(Cliente cliente);
     void abrirArquivo();
     Cliente lerRegistro();
+    Cliente lerRegistroAnterior();
 }

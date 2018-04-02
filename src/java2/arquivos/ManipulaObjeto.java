@@ -5,14 +5,20 @@
  */
 package java2.arquivos;
 
+import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FilterInputStream;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.EmptyStackException;
+import java.util.List;
+import java.util.Stack;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -29,6 +35,9 @@ public class ManipulaObjeto implements ManipulaDados {
     
     private FileInputStream fis;
     private ObjectInputStream ois;
+    private List<Cliente> clientesCache;
+    private int currentIndex = -1;
+    
 
     @Override
     public void criarArquivo() {
@@ -48,12 +57,14 @@ public class ManipulaObjeto implements ManipulaDados {
             try {
                 if (arquivo.exists()) {
                     fos = new FileOutputStream(arquivo, true);
+                    oos = new ObjectOutputStream(fos);
                     System.out.println("existe");
                 } else {
                     fos = new FileOutputStream(arquivo, false);
+                    oos = new AppendingObjectOutputStream(fos);
                     System.out.println("NAO existe");
                 }
-                oos = new ObjectOutputStream(fos);
+                
             } catch (IOException ioException) {
                 JOptionPane.showMessageDialog(null, "Erro ao Abrir Arquivo", "Erro", JOptionPane.ERROR_MESSAGE);
             }
@@ -85,6 +96,7 @@ public class ManipulaObjeto implements ManipulaDados {
         try {
             oos.writeObject(cliente);
             oos.flush();
+            JOptionPane.showMessageDialog(null, "Cliente Gravado Com sucesso", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
         } catch (IOException ioException) {
             fecharArquivo();
         }
@@ -105,8 +117,10 @@ public class ManipulaObjeto implements ManipulaDados {
             JOptionPane.showMessageDialog(null, "Nome de Arquivo Inválido", "Nome de Arquivo Inválido", JOptionPane.ERROR_MESSAGE);
         } else {
             try {
+                clientesCache = new ArrayList<>();
                 fis = new FileInputStream(arquivo);
                 ois = new ObjectInputStream(fis);
+                System.out.println("Mark supported? "+ois.markSupported());
             } catch (IOException ioException) {
                 JOptionPane.showMessageDialog(null, "Error ao Abrir Arquivo", "Erro", JOptionPane.ERROR_MESSAGE);
             }
@@ -116,20 +130,49 @@ public class ManipulaObjeto implements ManipulaDados {
     @Override
     public Cliente lerRegistro() {
         Cliente cliente = new Cliente();
+        boolean abriuArquivo = false;
         if (ois == null){
             abrirArquivo();
+            abriuArquivo = true;
         }
         try {
-            cliente = (Cliente) ois.readObject();
-            return cliente;
+            System.out.println(currentIndex);
+            if(abriuArquivo == false && currentIndex + 1 < clientesCache.size()) {
+                currentIndex++;
+                return clientesCache.get(currentIndex);
+            } else {
+                cliente = (Cliente) ois.readObject();
+                clientesCache.add(cliente);
+                currentIndex++;
+                return cliente;
+            }
         } catch (EOFException endOfFileException) {
-            JOptionPane.showMessageDialog(null, "Nao existem mais registros no arquivo.", "Fim do Arquivo", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Nao existem mais registros no arquivo.", "Fim do Arquivo", JOptionPane.INFORMATION_MESSAGE);
+            return clientesCache.get(currentIndex);
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(null, "Erro durante a leitura do arquivo", "Erro de Leitura", JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
+            return clientesCache.get(currentIndex);
         } catch (ClassNotFoundException ex) {
             JOptionPane.showMessageDialog(null, "Erro durante a leitura do arquivo", "Classe Cliente não encontrada", JOptionPane.ERROR_MESSAGE);
-        } finally {
-            return cliente;
+            return clientesCache.get(currentIndex);
+        } 
+    }
+
+    @Override
+    public Cliente lerRegistroAnterior() {
+        System.out.println(currentIndex);
+        if(clientesCache == null) {
+            JOptionPane.showMessageDialog(null, "Carregue um arquivo com dados primeiro no botão Próximo!", "Erro", JOptionPane.ERROR_MESSAGE);
+            return new Cliente();
         }
+        if(currentIndex == 0) {
+            JOptionPane.showMessageDialog(null, "Você está no inicio da Lista", "Atenção", JOptionPane.ERROR_MESSAGE);
+            return clientesCache.get(0);
+        }
+        Cliente returnedClient = clientesCache.get(--currentIndex);
+        System.out.println("ao final da operação: "+currentIndex);
+        return returnedClient;
+        
     }
 }
