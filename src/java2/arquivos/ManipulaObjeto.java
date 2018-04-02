@@ -5,6 +5,7 @@
  */
 package java2.arquivos;
 
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -121,6 +122,8 @@ public class ManipulaObjeto implements ManipulaDados {
         try {
             cliente = (Cliente) ois.readObject();
             return cliente;
+        } catch (EOFException endOfFileException) {
+            JOptionPane.showMessageDialog(null, "Nao existem mais registros no arquivo.", "Fim do Arquivo", JOptionPane.ERROR_MESSAGE);
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(null, "Erro durante a leitura do arquivo", "Erro de Leitura", JOptionPane.ERROR_MESSAGE);
         } catch (ClassNotFoundException ex) {
