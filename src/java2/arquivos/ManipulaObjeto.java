@@ -1,30 +1,19 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package java2.arquivos;
 
-import java.io.DataInputStream;
+
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FilterInputStream;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.EmptyStackException;
 import java.util.List;
-import java.util.Stack;
-
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 /**
- *
  * @author lucas.castro
  */
 public class ManipulaObjeto implements ManipulaDados {
@@ -49,8 +38,6 @@ public class ManipulaObjeto implements ManipulaDados {
             return;//finaliza a execuçao do metodo
         }
         arquivo = fileChooser.getSelectedFile();
-        System.out.println(fileChooser.getName());
-
         if (arquivo == null || arquivo.getName().equals("")) {
             JOptionPane.showMessageDialog(null, "Nome de Arquivo Inválido", "Nome de Arquivo Inválido", JOptionPane.ERROR_MESSAGE);
         } else {
@@ -58,11 +45,9 @@ public class ManipulaObjeto implements ManipulaDados {
                 if (arquivo.exists()) {
                     fos = new FileOutputStream(arquivo, true);
                     oos = new AppendingObjectOutputStream(fos);
-                    System.out.println("existe");
                 } else {
                     fos = new FileOutputStream(arquivo, false);
                     oos = new ObjectOutputStream(fos);
-                    System.out.println("NAO existe");
                 }
                 
             } catch (IOException ioException) {
@@ -111,7 +96,6 @@ public class ManipulaObjeto implements ManipulaDados {
             return;
         }
         arquivo = fileChooser.getSelectedFile();
-        System.out.println(arquivo);
 
         if (arquivo == null || arquivo.getName().equals("")) {
             JOptionPane.showMessageDialog(null, "Nome de Arquivo Inválido", "Nome de Arquivo Inválido", JOptionPane.ERROR_MESSAGE);
@@ -120,7 +104,6 @@ public class ManipulaObjeto implements ManipulaDados {
                 clientesCache = new ArrayList<>();
                 fis = new FileInputStream(arquivo);
                 ois = new ObjectInputStream(fis);
-                System.out.println("Mark supported? "+ois.markSupported());
             } catch (IOException ioException) {
                 JOptionPane.showMessageDialog(null, "Error ao Abrir Arquivo", "Erro", JOptionPane.ERROR_MESSAGE);
             }
@@ -129,14 +112,13 @@ public class ManipulaObjeto implements ManipulaDados {
 
     @Override
     public Cliente lerRegistro() {
-        Cliente cliente = new Cliente();
+        Cliente cliente;
         boolean abriuArquivo = false;
         if (ois == null){
             abrirArquivo();
             abriuArquivo = true;
         }
         try {
-            System.out.println(currentIndex);
             if(abriuArquivo == false && currentIndex + 1 < clientesCache.size()) {
                 currentIndex++;
                 return clientesCache.get(currentIndex);
@@ -151,7 +133,6 @@ public class ManipulaObjeto implements ManipulaDados {
             return clientesCache.get(currentIndex);
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(null, "Erro durante a leitura do arquivo", "Erro de Leitura", JOptionPane.ERROR_MESSAGE);
-            ex.printStackTrace();
             return clientesCache.get(currentIndex);
         } catch (ClassNotFoundException ex) {
             JOptionPane.showMessageDialog(null, "Erro durante a leitura do arquivo", "Classe Cliente não encontrada", JOptionPane.ERROR_MESSAGE);
@@ -161,7 +142,6 @@ public class ManipulaObjeto implements ManipulaDados {
 
     @Override
     public Cliente lerRegistroAnterior() {
-        System.out.println(currentIndex);
         if(clientesCache == null) {
             JOptionPane.showMessageDialog(null, "Carregue um arquivo com dados primeiro no botão Próximo!", "Erro", JOptionPane.ERROR_MESSAGE);
             return new Cliente();
@@ -171,8 +151,6 @@ public class ManipulaObjeto implements ManipulaDados {
             return clientesCache.get(0);
         }
         Cliente returnedClient = clientesCache.get(--currentIndex);
-        System.out.println("ao final da operação: "+currentIndex);
         return returnedClient;
-        
     }
 }
