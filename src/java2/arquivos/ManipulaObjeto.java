@@ -57,11 +57,11 @@ public class ManipulaObjeto implements ManipulaDados {
             try {
                 if (arquivo.exists()) {
                     fos = new FileOutputStream(arquivo, true);
-                    oos = new ObjectOutputStream(fos);
+                    oos = new AppendingObjectOutputStream(fos);
                     System.out.println("existe");
                 } else {
                     fos = new FileOutputStream(arquivo, false);
-                    oos = new AppendingObjectOutputStream(fos);
+                    oos = new ObjectOutputStream(fos);
                     System.out.println("NAO existe");
                 }
                 
@@ -167,7 +167,7 @@ public class ManipulaObjeto implements ManipulaDados {
             return new Cliente();
         }
         if(currentIndex == 0) {
-            JOptionPane.showMessageDialog(null, "Você está no inicio da Lista", "Atenção", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Você está no inicio da Lista", "Atenção", JOptionPane.INFORMATION_MESSAGE);
             return clientesCache.get(0);
         }
         Cliente returnedClient = clientesCache.get(--currentIndex);
