@@ -9,6 +9,11 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 
+/*
+Author: Andreas_D
+Link da ajuda: 
+https://stackoverflow.com/questions/1194656/appending-to-an-objectoutputstream/1195078#1195078
+*/
 public class AppendingObjectOutputStream extends ObjectOutputStream {
 
   public AppendingObjectOutputStream(OutputStream out) throws IOException {
